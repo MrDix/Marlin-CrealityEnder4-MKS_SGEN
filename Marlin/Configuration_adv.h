@@ -165,13 +165,13 @@
  * Thermal Protection parameters for the bed are just as above for hotends.
  */
 #if ENABLED(THERMAL_PROTECTION_BED)
-  #define THERMAL_PROTECTION_BED_PERIOD 20    // Seconds
-  #define THERMAL_PROTECTION_BED_HYSTERESIS 2 // Degrees Celsius
+  #define THERMAL_PROTECTION_BED_PERIOD 90    // Seconds
+  #define THERMAL_PROTECTION_BED_HYSTERESIS 40 // Degrees Celsius
 
   /**
    * As described above, except for the bed (M140/M190/M303).
    */
-  #define WATCH_BED_TEMP_PERIOD 60                // Seconds
+  #define WATCH_BED_TEMP_PERIOD 90                // Seconds
   #define WATCH_BED_TEMP_INCREASE 2               // Degrees Celsius
 #endif
 
@@ -1294,9 +1294,48 @@
 
 // @section leveling
 
+/**
+ * Points to probe for all 3-point Leveling procedures.
+ * Override if the automatically selected points are inadequate.
+ */
+#if EITHER(AUTO_BED_LEVELING_3POINT, AUTO_BED_LEVELING_UBL)
+  #define PROBE_PT_1_X 40
+  #define PROBE_PT_1_Y 20
+  #define PROBE_PT_2_X 215
+  #define PROBE_PT_2_Y 20
+  #define PROBE_PT_3_X 117
+  #define PROBE_PT_3_Y 215
+#endif
+
+/**
+ * Override MIN_PROBE_EDGE for each side of the build plate
+ * Useful to get probe points to exact positions on targets or
+ * to allow leveling to avoid plate clamps on only specific
+ * sides of the bed.
+ *
+ * If you are replacing the prior *_PROBE_BED_POSITION options,
+ * LEFT and FRONT values in most cases will map directly over
+ * RIGHT and REAR would be the inverse such as
+ * (X/Y_BED_SIZE - RIGHT/BACK_PROBE_BED_POSITION)
+ *
+ * This will allow all positions to match at compilation, however
+ * should the probe position be modified with M851XY then the
+ * probe points will follow. This prevents any change from causing
+ * the probe to be unable to reach any points.
+ */
+#if PROBE_SELECTED && !IS_KINEMATIC
+  #define MIN_PROBE_EDGE_LEFT MIN_PROBE_EDGE
+  #define MIN_PROBE_EDGE_RIGHT MIN_PROBE_EDGE
+  #define MIN_PROBE_EDGE_FRONT MIN_PROBE_EDGE
+  #define MIN_PROBE_EDGE_BACK MIN_PROBE_EDGE
+#endif
 
 #if EITHER(MESH_BED_LEVELING, AUTO_BED_LEVELING_UBL)
   // Override the mesh area if the automatic (max) area is too large
+  //#define MESH_MIN_X MESH_INSET
+  //#define MESH_MIN_Y MESH_INSET
+  //#define MESH_MAX_X X_BED_SIZE - (MESH_INSET)
+  //#define MESH_MAX_Y Y_BED_SIZE - (MESH_INSET)
 #endif
 
 /**
